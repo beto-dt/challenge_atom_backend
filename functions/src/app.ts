@@ -4,11 +4,11 @@ import {AppConfig} from "@infrastructure/config/app.config";
 import {
   notFoundMiddleware,
   errorHandlerMiddleware,
-} from "@infrastructure/middlewares/error-handler.middleware";
+} from "@presentation/middlewares/error-handler.middleware";
 import helmet from "helmet";
 import {firebaseConfig} from "@infrastructure/config/firebase.config";
 import {logger} from "@shared/utils/logger";
-import {routes} from "./routes";
+import {routes} from "@presentation/routes/routes";
 
 /**
  * Crea y configura la aplicación Express

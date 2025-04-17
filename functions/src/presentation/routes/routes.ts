@@ -1,10 +1,7 @@
 import {Router as router} from "express";
-import {TaskController} from "@infrastructure/controllers/task.controller";
-import {UserController} from "@infrastructure/controllers/user.controller";
-import {validate, ValidationSchemas} from
-  "@infrastructure/middlewares/validation.middleware";
-import {createAuthMiddleware} from
-  "@infrastructure/middlewares/authentication.middleware";
+import {TaskController} from "../controllers/task.controller";
+import {UserController} from "../controllers/user.controller";
+
 
 import {FirestoreTaskRepository} from
   "@infrastructure/repositories/firestore-task.repository";
@@ -21,6 +18,10 @@ import {DeleteTaskUseCase} from
 import {FindUserUseCase} from "@application/use-cases/user/find-user.usecase";
 import {CreateUserUseCase} from
   "@application/use-cases/user/create-user.usecase";
+import {createAuthMiddleware} from
+  "@presentation/middlewares/authentication.middleware";
+import {validate, ValidationSchemas} from
+  "@presentation/middlewares/validation.middleware";
 
 export const routes = router();
 

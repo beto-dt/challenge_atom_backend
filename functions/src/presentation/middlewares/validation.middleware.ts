@@ -5,7 +5,7 @@ import {
   ValidationError,
 } from "express-validator";
 import {createHttpError} from
-  "@infrastructure/middlewares/error-handler.middleware";
+  "./error-handler.middleware";
 
 /**
  * Middleware que ejecuta las validaciones y maneja los errores

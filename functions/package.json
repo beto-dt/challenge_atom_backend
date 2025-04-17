@@ -18,6 +18,7 @@
     "@application": "lib/application",
     "@domain": "lib/domain",
     "@infrastructure": "lib/infrastructure",
+    "@presentation": "lib/presentation",
     "@shared": "lib/shared"
   },
   "dependencies": {
