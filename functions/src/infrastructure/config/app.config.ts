@@ -39,7 +39,4 @@ export const AppConfig = {
   isProduction(): boolean {
     return this.environment === "production";
   },
-  isDevelopment(): boolean {
-    return this.environment === "development";
-  },
 };

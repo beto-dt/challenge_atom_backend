@@ -6,51 +6,54 @@ import {User} from "@domain/entities/user.entity";
  * Interfaz para extender Request con información de usuario
  */
 interface AuthenticatedRequest extends Request {
-    user?: {
-        id: string;
-        email: string;
-    };
+  user?: {
+    id: string;
+    email: string;
+  };
 }
-
 /**
  * Middleware para verificar y procesar la autenticación
  */
 export class AuthenticationMiddleware {
   /**
-   * Creates an instance of AuthenticationMiddleware
-   * @param {FindUserUseCase} findUserUseCase Use case for finding users
+   * Crea una instancia de AuthenticationMiddleware
+   * @param {FindUserUseCase} findUserUseCase Caso de uso para buscar usuarios
    */
-  constructor(private findUserUseCase: FindUserUseCase) {}
+  constructor(private readonly findUserUseCase: FindUserUseCase) {}
 
   /**
-   * Creates an authentication middleware function
-   * @param {boolean} required Whether authentication is required
-   * @return {Function} Express middleware function that handles authentication
+   * Crea una función middleware de autenticación
+   * @param {boolean} required Indica si la autenticación es obligatoria
+   * @return {Function} Función middleware
+   * de Express que maneja la autenticación
    */
   authenticate(required = true) {
-    return async (
+    const boundMiddleware = async (
       req: AuthenticatedRequest,
       res: Response,
       next: NextFunction
-    ) => {
+    ): Promise<void> => {
       try {
         const userId = req.headers["user-id"] as string;
         if (!userId) {
           if (required) {
-            return res.status(401).json({
+            res.status(401).json({
               message: "Autenticación requerida",
             });
+            return;
           } else {
-            return next();
+            next();
+            return;
           }
         }
 
         const user = await this.findUserById(userId);
 
         if (!user) {
-          return res.status(401).json({
+          res.status(401).json({
             message: "Usuario no encontrado",
           });
+          return;
         }
 
         req.user = {
@@ -59,50 +62,66 @@ export class AuthenticationMiddleware {
         };
 
         next();
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error("Error en autenticación:", error);
-        return res.status(500).json({
+
+        const errorMessage = error instanceof Error ?
+          error.message :
+          "Error desconocido de autenticación";
+
+        res.status(500).json({
           message: "Error de autenticación",
+          details: errorMessage,
         });
       }
     };
+
+    return boundMiddleware.bind(this);
   }
 
   /**
-     * Método auxiliar para buscar un usuario por ID (simplificado)
-     * En una implementación real, usaríamos el caso de uso correspondiente
-     * @param {string} userId ID del usuario a buscar
-     * @return {Promise<User | null>} Usuario encontrado o null si no existe
-     */
+   * Método auxiliar para buscar un usuario por ID
+   * @param {string} userId ID del usuario a buscar
+   * @return {Promise<User | null>} Usuario encontrado o null si no existe
+   */
   private async findUserById(userId: string): Promise<User | null> {
-    const user = await this.findUserUseCase.findById(userId);
-    if (!user) {
+    try {
+      const user = await this.findUserUseCase.findById(userId);
+      return user || null;
+    } catch (error) {
+      console.error(`Error al buscar usuario con ID ${userId}:`, error);
       return null;
     }
-    return user;
   }
 }
 
 /**
+ * Tipo para los middlewares de autenticación
+ */
+export interface AuthMiddlewares {
+  required: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+  optional: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+}
+
+/**
  * Crea una instancia del middleware de autenticación
- * Esta función facilita el uso del middleware en las rutas
- * @param {FindUserUseCase} findUserUseCase Use case for finding users
- * @return {Object} An object containing required and optional authentication
- *                  middleware functions
+ * @param {FindUserUseCase} findUserUseCase Caso de uso para buscar usuarios
+ * @return {AuthMiddlewares} Objeto con funciones middleware de autenticación
  */
 export const createAuthMiddleware = (
   findUserUseCase: FindUserUseCase
-) => {
+): AuthMiddlewares => {
   const middleware = new AuthenticationMiddleware(findUserUseCase);
+
   return {
     /**
-         * Middleware que requiere autenticación
-         */
+     * Middleware que requiere autenticación
+     */
     required: middleware.authenticate(true),
 
     /**
-         * Middleware que hace la autenticación opcional
-         */
+     * Middleware que hace la autenticación opcional
+     */
     optional: middleware.authenticate(false),
   };
 };
