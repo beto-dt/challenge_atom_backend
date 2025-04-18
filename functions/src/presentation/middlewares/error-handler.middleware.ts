@@ -14,18 +14,29 @@ interface HttpError extends Error {
 }
 
 /**
+ * Interfaz para la respuesta de error
+ */
+interface ErrorResponse {
+  status: string;
+  code: string;
+  message: string;
+  stack?: string;
+}
+
+/**
  * Middleware para manejar errores de forma centralizada
  * La firma correcta de un middleware de error DEBE tener 4 parámetros
  * @param {HttpError} err Error a manejar
  * @param {Request} req Objeto de solicitud Express
  * @param {Response} res Objeto de respuesta Express
- * @param {NextFunction} next Función para pasar al siguiente middleware
+ * @param {NextFunction} _next
+ * Función para pasar al siguiente middleware (no utilizado)
  */
 export const errorHandlerMiddleware = (
   err: HttpError,
   req: Request,
   res: Response,
-  next: NextFunction // Este parámetro es necesario aunque no se use
+  _next: NextFunction
 ) => {
   // Registrar el error
   console.error("Error:", err);
@@ -52,14 +63,14 @@ export const errorHandlerMiddleware = (
     errorCode = "VALIDATION_ERROR";
   }
 
-  const errorResponse = {
+  const errorResponse: ErrorResponse = {
     status: "error",
     code: errorCode,
     message: message,
   };
 
   if (!AppConfig.isProduction()) {
-    (errorResponse as any).stack = err.stack;
+    errorResponse.stack = err.stack;
   }
 
   res.status(statusCode).json(errorResponse);
@@ -69,12 +80,10 @@ export const errorHandlerMiddleware = (
  * Middleware para manejar rutas no encontradas
  * @param {Request} req Objeto de solicitud Express
  * @param {Response} res Objeto de respuesta Express
- * @param {NextFunction} next Función para pasar al siguiente middleware
  */
 export const notFoundMiddleware = (
   req: Request,
-  res: Response,
-  next: NextFunction,
+  res: Response
 ) => {
   res.status(404).json({
     status: "error",

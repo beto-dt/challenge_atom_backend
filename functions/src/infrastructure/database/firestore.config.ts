@@ -52,7 +52,6 @@ export class FirestoreConfig {
         });
       } catch (error) {
         console.warn("Error al configurar Firestore settings:", error);
-        // Continuar de todos modos
       }
     }
 
