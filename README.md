@@ -38,20 +38,13 @@ Este proyecto implementa un backend utilizando TypeScript, Express y Firebase Cl
 
 ## ⚙️ Configuración
 
-1. Crea un archivo `.env` en la carpeta raiz y que contenga lo siguiente
+1. Crea un archivo `.env` en la carpeta raiz y que esta en este link 
 
- ```bash
-NODE_ENV = "production"
-PORT = "5000"
-API_PREFIX = "/api"
-TOKEN_EXPIRATION_TIME = "86400"
-LOG_LEVEL = "info"
-LOG_FILE = "app.log"
-FIREBASE_DATABASE_URL = "https://challengeatombackend-default-rtdb.firebaseio.com"
-FIREBASE_STORAGE_BUCKET = "challengeatombackend.firebasestorage.app"
-FIREBASE_PROJECT_ID = "challengeatombackend"
-PAGINATION_LIMIT = "10"
-   ```
+https://drive.google.com/drive/folders/1L0yaqg8ODgJ_2JpGAUfPY-gojfnm7FFq?usp=sharing
+
+Tambien adjunto los archivos del postman para probar los enpoint
+
+https://drive.google.com/drive/folders/1Yg-RZsBRdx0KinBYbP8y07FjV0Gefv5E?usp=sharing
 
 ## 💻 Desarrollo Local
 
